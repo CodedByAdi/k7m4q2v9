@@ -1,0 +1,47 @@
+{
+  "project": "Windline",
+  "version": "1.0.0",
+  "data_provider": "Elexon Insights Solution (BMRS)",
+  "api_base_url": "https://data.elexon.co.uk/bmrs/api/v1",
+  "generated_at": "2026-10-25T08:23:09Z",
+  "licensing": {
+    "licence_name": "BMRS Open Data Licence",
+    "licence_url": "https://www.elexon.co.uk/bsc/data/balancing-mechanism-reporting-agent/copyright-licence-bmrs-data/",
+    "attribution": "Contains BMRS data © Elexon Limited copyright and database right 2026.",
+    "disclaimer": "Elexon Limited does not endorse, sponsor, or approve Windline or its analytical findings."
+  },
+  "provenance": {
+    "audit_script": "scripts/audit_full_window.py",
+    "fuelhh_snapshot": "data/audit/fuelhh_full.json",
+    "windfor_snapshot": "data/audit/windfor_full.json",
+    "fuelhh_rows": 1488,
+    "windfor_rows": 18688,
+    "windfor_vintages": 256
+  },
+  "windows": {
+    "decision_date_start": "2026-01-01",
+    "decision_date_end": "2026-01-31",
+    "delivery_date_start": "2026-01-02",
+    "delivery_date_end": "2026-02-01",
+    "total_decision_dates": 31,
+    "total_delivery_dates": 31
+  },
+  "policy": {
+    "default_cutoff_time": "09:00",
+    "timezone": "Europe/London",
+    "selection_rule": "Latest eligible vintage with publishTime <= cutoff containing forecast records for target delivery date",
+    "expected_intervals_per_delivery_day": 24,
+    "total_expected_hourly_intervals": 744,
+    "actual_granularity_minutes": 30,
+    "forecast_granularity_minutes": 60,
+    "aggregation_method": "arithmetic mean of two half-hourly actuals per clock hour",
+    "zero_imputation": false
+  },
+  "metrics": {
+    "mae": "Mean Absolute Error in MW: mean(|forecast - actual|)",
+    "rmse": "Root Mean Squared Error in MW: sqrt(mean((forecast - actual)^2))",
+    "bias": "Signed Mean Error in MW: mean(forecast - actual), positive = overforecast, negative = underforecast",
+    "wape": "Weighted Absolute Percentage Error in %: sum(|forecast - actual|) / sum(actual) * 100",
+    "coverage": "valid matched intervals / expected intervals (ratio 0.0 to 1.0)"
+  }
+}

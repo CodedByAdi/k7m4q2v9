@@ -1,0 +1,6 @@
+# Backend development and testing requirements
+fastapi==0.162.0
+uvicorn>=0.32.0
+pydantic>=2.10.0
+httpx>=0.28.0
+pytest>=8.0.0

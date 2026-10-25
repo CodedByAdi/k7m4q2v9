@@ -1,0 +1,9 @@
+{
+  "go": true,
+  "blockers": [],
+  "warnings": [],
+  "fuelhh_rows": 1488,
+  "windfor_vintages": 256,
+  "auditable_dates": 31,
+  "comparisons": 744
+}

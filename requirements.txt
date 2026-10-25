@@ -1,0 +1,6 @@
+# Production requirements for Windline FastAPI server
+# Pinned to tested and verified FastAPI runtime supporting app.frontend()
+fastapi==0.162.0
+uvicorn>=0.32.0
+pydantic>=2.10.0
+httpx>=0.28.0

@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "windline"
+version = "1.0.0"
+description = "Retrospective GB Wind Generation Forecast Analytics"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi==0.162.0",
+    "uvicorn>=0.32.0",
+    "pydantic>=2.10.0",
+    "httpx>=0.28.0"
+]
+
+[tool.vercel]
+entrypoint = "app.py"
+
+[tool.vercel.scripts]
+build = "cd frontend && npm ci && npm run build"
+
+[tool.vercel.fastapi.static]
+cdn = true
+exclude = false

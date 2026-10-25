@@ -1,0 +1,12 @@
+services:
+  windline:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: windline:latest
+    container_name: windline-app
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+    restart: unless-stopped

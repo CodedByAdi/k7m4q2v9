@@ -1,0 +1,289 @@
+{
+  "raw_half_hourly_actuals": 1488,
+  "expected_max_comparisons": 744,
+  "actual_comparisons": 744,
+  "missing_actual_hours": 0,
+  "missing_forecast_hours": 0,
+  "duplicate_joins": 0,
+  "per_date": [
+    {
+      "delivery_date": "2026-01-02",
+      "decision_date": "2026-01-01",
+      "selected_vintage": "2026-01-01T07:30:00Z",
+      "comparisons": 24,
+      "missing_actual_hours": 0,
+      "missing_forecast_hours": 0,
+      "skipped": false
+    },
+    {
+      "delivery_date": "2026-01-03",
+      "decision_date": "2026-01-02",
+      "selected_vintage": "2026-01-02T07:30:00Z",
+      "comparisons": 24,
+      "missing_actual_hours": 0,
+      "missing_forecast_hours": 0,
+      "skipped": false
+    },
+    {
+      "delivery_date": "2026-01-04",
+      "decision_date": "2026-01-03",
+      "selected_vintage": "2026-01-03T07:30:00Z",
+      "comparisons": 24,
+      "missing_actual_hours": 0,
+      "missing_forecast_hours": 0,
+      "skipped": false
+    },
+    {
+      "delivery_date": "2026-01-05",
+      "decision_date": "2026-01-04",
+      "selected_vintage": "2026-01-04T07:30:00Z",
+      "comparisons": 24,
+      "missing_actual_hours": 0,
+      "missing_forecast_hours": 0,
+      "skipped": false
+    },
+    {
+      "delivery_date": "2026-01-06",
+      "decision_date": "2026-01-05",
+      "selected_vintage": "2026-01-05T07:30:00Z",
+      "comparisons": 24,
+      "missing_actual_hours": 0,
+      "missing_forecast_hours": 0,
+      "skipped": false
+    },
+    {
+      "delivery_date": "2026-01-07",
+      "decision_date": "2026-01-06",
+      "selected_vintage": "2026-01-06T07:30:00Z",
+      "comparisons": 24,
+      "missing_actual_hours": 0,
+      "missing_forecast_hours": 0,
+      "skipped": false
+    },
+    {
+      "delivery_date": "2026-01-08",
+      "decision_date": "2026-01-07",
+      "selected_vintage": "2026-01-07T07:30:00Z",
+      "comparisons": 24,
+      "missing_actual_hours": 0,
+      "missing_forecast_hours": 0,
+      "skipped": false
+    },
+    {
+      "delivery_date": "2026-01-09",
+      "decision_date": "2026-01-08",
+      "selected_vintage": "2026-01-08T07:30:00Z",
+      "comparisons": 24,
+      "missing_actual_hours": 0,
+      "missing_forecast_hours": 0,
+      "skipped": false
+    },
+    {
+      "delivery_date": "2026-01-10",
+      "decision_date": "2026-01-09",
+      "selected_vintage": "2026-01-09T07:30:00Z",
+      "comparisons": 24,
+      "missing_actual_hours": 0,
+      "missing_forecast_hours": 0,
+      "skipped": false
+    },
+    {
+      "delivery_date": "2026-01-11",
+      "decision_date": "2026-01-10",
+      "selected_vintage": "2026-01-10T07:30:00Z",
+      "comparisons": 24,
+      "missing_actual_hours": 0,
+      "missing_forecast_hours": 0,
+      "skipped": false
+    },
+    {
+      "delivery_date": "2026-01-12",
+      "decision_date": "2026-01-11",
+      "selected_vintage": "2026-01-11T07:30:00Z",
+      "comparisons": 24,
+      "missing_actual_hours": 0,
+      "missing_forecast_hours": 0,
+      "skipped": false
+    },
+    {
+      "delivery_date": "2026-01-13",
+      "decision_date": "2026-01-12",
+      "selected_vintage": "2026-01-12T07:30:00Z",
+      "comparisons": 24,
+      "missing_actual_hours": 0,
+      "missing_forecast_hours": 0,
+      "skipped": false
+    },
+    {
+      "delivery_date": "2026-01-14",
+      "decision_date": "2026-01-13",
+      "selected_vintage": "2026-01-13T07:30:00Z",
+      "comparisons": 24,
+      "missing_actual_hours": 0,
+      "missing_forecast_hours": 0,
+      "skipped": false
+    },
+    {
+      "delivery_date": "2026-01-15",
+      "decision_date": "2026-01-14",
+      "selected_vintage": "2026-01-14T07:30:00Z",
+      "comparisons": 24,
+      "missing_actual_hours": 0,
+      "missing_forecast_hours": 0,
+      "skipped": false
+    },
+    {
+      "delivery_date": "2026-01-16",
+      "decision_date": "2026-01-15",
+      "selected_vintage": "2026-01-15T07:30:00Z",
+      "comparisons": 24,
+      "missing_actual_hours": 0,
+      "missing_forecast_hours": 0,
+      "skipped": false
+    },
+    {
+      "delivery_date": "2026-01-17",
+      "decision_date": "2026-01-16",
+      "selected_vintage": "2026-01-16T07:30:00Z",
+      "comparisons": 24,
+      "missing_actual_hours": 0,
+      "missing_forecast_hours": 0,
+      "skipped": false
+    },
+    {
+      "delivery_date": "2026-01-18",
+      "decision_date": "2026-01-17",
+      "selected_vintage": "2026-01-17T07:30:00Z",
+      "comparisons": 24,
+      "missing_actual_hours": 0,
+      "missing_forecast_hours": 0,
+      "skipped": false
+    },
+    {
+      "delivery_date": "2026-01-19",
+      "decision_date": "2026-01-18",
+      "selected_vintage": "2026-01-18T07:30:00Z",
+      "comparisons": 24,
+      "missing_actual_hours": 0,
+      "missing_forecast_hours": 0,
+      "skipped": false
+    },
+    {
+      "delivery_date": "2026-01-20",
+      "decision_date": "2026-01-19",
+      "selected_vintage": "2026-01-19T07:30:00Z",
+      "comparisons": 24,
+      "missing_actual_hours": 0,
+      "missing_forecast_hours": 0,
+      "skipped": false
+    },
+    {
+      "delivery_date": "2026-01-21",
+      "decision_date": "2026-01-20",
+      "selected_vintage": "2026-01-20T07:30:00Z",
+      "comparisons": 24,
+      "missing_actual_hours": 0,
+      "missing_forecast_hours": 0,
+      "skipped": false
+    },
+    {
+      "delivery_date": "2026-01-22",
+      "decision_date": "2026-01-21",
+      "selected_vintage": "2026-01-21T07:30:00Z",
+      "comparisons": 24,
+      "missing_actual_hours": 0,
+      "missing_forecast_hours": 0,
+      "skipped": false
+    },
+    {
+      "delivery_date": "2026-01-23",
+      "decision_date": "2026-01-22",
+      "selected_vintage": "2026-01-22T07:30:00Z",
+      "comparisons": 24,
+      "missing_actual_hours": 0,
+      "missing_forecast_hours": 0,
+      "skipped": false
+    },
+    {
+      "delivery_date": "2026-01-24",
+      "decision_date": "2026-01-23",
+      "selected_vintage": "2026-01-23T07:30:00Z",
+      "comparisons": 24,
+      "missing_actual_hours": 0,
+      "missing_forecast_hours": 0,
+      "skipped": false
+    },
+    {
+      "delivery_date": "2026-01-25",
+      "decision_date": "2026-01-24",
+      "selected_vintage": "2026-01-24T07:30:00Z",
+      "comparisons": 24,
+      "missing_actual_hours": 0,
+      "missing_forecast_hours": 0,
+      "skipped": false
+    },
+    {
+      "delivery_date": "2026-01-26",
+      "decision_date": "2026-01-25",
+      "selected_vintage": "2026-01-25T07:30:00Z",
+      "comparisons": 24,
+      "missing_actual_hours": 0,
+      "missing_forecast_hours": 0,
+      "skipped": false
+    },
+    {
+      "delivery_date": "2026-01-27",
+      "decision_date": "2026-01-26",
+      "selected_vintage": "2026-01-26T07:30:00Z",
+      "comparisons": 24,
+      "missing_actual_hours": 0,
+      "missing_forecast_hours": 0,
+      "skipped": false
+    },
+    {
+      "delivery_date": "2026-01-28",
+      "decision_date": "2026-01-27",
+      "selected_vintage": "2026-01-27T07:30:00Z",
+      "comparisons": 24,
+      "missing_actual_hours": 0,
+      "missing_forecast_hours": 0,
+      "skipped": false
+    },
+    {
+      "delivery_date": "2026-01-29",
+      "decision_date": "2026-01-28",
+      "selected_vintage": "2026-01-28T07:30:00Z",
+      "comparisons": 24,
+      "missing_actual_hours": 0,
+      "missing_forecast_hours": 0,
+      "skipped": false
+    },
+    {
+      "delivery_date": "2026-01-30",
+      "decision_date": "2026-01-29",
+      "selected_vintage": "2026-01-29T07:30:00Z",
+      "comparisons": 24,
+      "missing_actual_hours": 0,
+      "missing_forecast_hours": 0,
+      "skipped": false
+    },
+    {
+      "delivery_date": "2026-01-31",
+      "decision_date": "2026-01-30",
+      "selected_vintage": "2026-01-30T07:30:00Z",
+      "comparisons": 24,
+      "missing_actual_hours": 0,
+      "missing_forecast_hours": 0,
+      "skipped": false
+    },
+    {
+      "delivery_date": "2026-02-01",
+      "decision_date": "2026-01-31",
+      "selected_vintage": "2026-01-31T07:30:00Z",
+      "comparisons": 24,
+      "missing_actual_hours": 0,
+      "missing_forecast_hours": 0,
+      "skipped": false
+    }
+  ]
+}

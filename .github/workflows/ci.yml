@@ -1,0 +1,107 @@
+name: Windline CI
+
+on:
+  push:
+    branches: [ "master", "main" ]
+  pull_request:
+    branches: [ "master", "main" ]
+
+jobs:
+  test-and-verify:
+    name: Build, Test & Container Integration
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: "frontend/package-lock.json"
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+
+      - name: Run backend pytest suite
+        run: |
+          python scripts/run_tests.py
+
+      - name: Run Python bytecode compilation checks
+        run: |
+          python -m compileall -q app.py backend/ scripts/
+
+      - name: Install frontend dependencies and build SPA
+        run: |
+          cd frontend
+          npm ci
+          npm run build
+          cd ..
+
+      - name: Validate Docker build
+        run: |
+          docker build -t windline:ci .
+
+      - name: Start Docker container
+        run: |
+          docker run -d --name windline-ci -p 8000:8000 windline:ci
+
+      - name: Wait for container readiness
+        run: |
+          timeout 30s bash -c 'until curl -s -f http://127.0.0.1:8000/api/health; do sleep 1; done'
+
+      - name: Verify live container endpoints and 744 comparisons
+        run: |
+          # 1. Check health endpoint
+          curl -s -f http://127.0.0.1:8000/api/health | grep '"status":"healthy"'
+
+          # 2. Check root React SPA
+          curl -s -f http://127.0.0.1:8000/ | grep '<div id="root"></div>'
+
+          # 3. Check delivery detail endpoint
+          curl -s -f "http://127.0.0.1:8000/api/deliveries/2026-01-02?cutoff=09:00" | grep '"delivery_date":"2026-01-02"'
+
+          # 4. Check overview and confirm exactly 744 matched hourly comparisons
+          OVERVIEW_JSON=$(curl -s -f "http://127.0.0.1:8000/api/overview?cutoff=09:00")
+          echo "$OVERVIEW_JSON" | python -c '
+          import sys, json
+          data = json.load(sys.stdin)
+          overall = data["overall_metrics"]
+          assert data["total_delivery_days"] == 31, f"Expected 31 days, got {data[\"total_delivery_days\"]}"
+          assert overall["expected_intervals"] == 744, f"Expected 744 intervals, got {overall[\"expected_intervals\"]}"
+          assert overall["matched_intervals"] == 744, f"Expected 744 matched, got {overall[\"matched_intervals\"]}"
+          assert overall["omitted_intervals"] == 0, f"Expected 0 omitted, got {overall[\"omitted_intervals\"]}"
+          assert overall["coverage"] == 1.0, f"Expected coverage 1.0, got {overall[\"coverage\"]}"
+          assert overall["wape"] == 18.07, f"Expected WAPE 18.07%, got {overall[\"wape\"]}"
+          print("Overview verification passed: all 744 hourly comparisons confirmed.")
+          '
+
+          # 5. Check CSV export and confirm exactly 744 data rows (745 lines including header)
+          CSV_DATA=$(curl -s -f "http://127.0.0.1:8000/api/export.csv?cutoff=09:00")
+          echo "$CSV_DATA" | python -c '
+          import sys, csv
+          reader = list(csv.DictReader(sys.stdin))
+          assert len(reader) == 744, f"Expected 744 CSV rows, got {len(reader)}"
+          assert reader[0]["deliveryDate"] == "2026-01-02"
+          assert reader[-1]["deliveryDate"] == "2026-02-01"
+          print("CSV export verification passed: exactly 744 comparison rows confirmed.")
+          '
+
+          # 6. Run full verification suite against container
+          python scripts/verify_live_server.py
+
+      - name: Stop and remove container (always runs)
+        if: always()
+        run: |
+          docker stop windline-ci || true
+          docker rm windline-ci || true
