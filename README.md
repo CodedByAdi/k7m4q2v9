@@ -230,7 +230,7 @@ A GitHub Actions workflow is defined in `.github/workflows/ci.yml` to automatica
 Windline is configured for deployment as a Vercel Serverless Function via `vercel.json`:
 * **Runtime**: Python 3.12 running FastAPI.
 * **Build Command**: `cd frontend && npm ci && npm run build` compiles static assets during build.
-* **Entrypoint**: `app.py` exposes the ASGI `app` instance.
+* **Entrypoint**: `backend.app.main:app` (configured via `[tool.vercel]` in `pyproject.toml`) points directly to the FastAPI instance.
 * **Data Snapshots**: Verified historical snapshots are bundled via `"includeFiles": "data/**"`.
 
 To deploy via the Vercel CLI:

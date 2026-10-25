@@ -1,7 +1,7 @@
 """Windline unified application entrypoint.
 
-This module provides the root FastAPI application instance for Vercel serverless
-deployment and Docker production containers. It imports the configured FastAPI app
+This module provides the root FastAPI application instance for local execution
+and Docker production containers. It imports the configured FastAPI app
 from backend.app.main and ensures the pre-built React frontend is served at '/'.
 """
 
