@@ -15,6 +15,14 @@ dependencies = [
     "httpx>=0.28.0"
 ]
 
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["backend*"]
+exclude = ["data*", "frontend*", "docs*", "scripts*", "tests*"]
+
+[tool.setuptools]
+py-modules = ["app"]
+
 [tool.vercel]
 entrypoint = "backend.app.main:app"
 
