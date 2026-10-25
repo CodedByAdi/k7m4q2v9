@@ -35,10 +35,10 @@ from backend.app.timestamps import (
 
 
 class TestDateMapping:
-    """Test required properties 1 & 2: 31 decision dates mapping to delivery dates."""
+    """Test date mapping between decision dates and next-day delivery dates."""
 
     def test_all_31_decision_dates_map_to_next_day_delivery_dates(self):
-        """1. All 31 decision dates map to the correct next-day delivery dates."""
+        """All 31 decision dates map to the correct next-day delivery dates."""
         current = DECISION_DATE_START
         decision_dates = []
         delivery_dates = []
@@ -62,7 +62,7 @@ class TestDateMapping:
         assert delivery_dates[-1] == DELIVERY_DATE_END    # 2026-02-01
 
     def test_jan_31_decision_includes_delivery_on_feb_1(self):
-        """2. Jan 31 decisions include delivery on Feb 1."""
+        """Jan 31 decisions include delivery on Feb 1."""
         jan_31 = date(2026, 1, 31)
         feb_1 = decision_date_to_delivery_date(jan_31)
         assert feb_1 == date(2026, 2, 1)
@@ -112,10 +112,10 @@ class TestTimestampsAndTimezones:
 
 
 class TestMetricsCalculation:
-    """Test required properties 11 & 12: Hand-calculated metrics and zero-denominator handling."""
+    """Test metrics calculation functions and zero-denominator handling."""
 
     def test_metrics_match_hand_calculated_examples(self):
-        """11. MAE, RMSE, signed bias and WAPE match hand-calculated examples."""
+        """MAE, RMSE, signed bias and WAPE match hand-calculated examples."""
         # Example pairs: (forecast, actual)
         # Pair 1: (120, 100) -> error = +20, abs_err = 20, sq_err = 400
         # Pair 2: (80,  100) -> error = -20, abs_err = 20, sq_err = 400
@@ -165,7 +165,7 @@ class TestMetricsCalculation:
 
 
     def test_zero_denominator_wape_returns_null(self):
-        """12. Zero-denominator WAPE returns null/unavailable, never zero or infinity."""
+        """Zero-denominator WAPE returns null/unavailable, never zero or infinity."""
         pairs_zero_actual = [(100.0, 0.0), (50.0, 0.0)]
         wape = calculate_wape(pairs_zero_actual)
         assert wape is None
@@ -194,10 +194,10 @@ class TestMetricsCalculation:
 
 
 class TestActualsAggregation:
-    """Test required properties 8, 9, 10: Two half-hours aggregate to hourly mean, duplicate detection."""
+    """Test actuals aggregation, half-hour to hourly mean, and duplicate detection."""
 
     def test_two_half_hourly_values_aggregate_into_correct_hourly_mean(self):
-        """8. Two half-hourly values aggregate into the correct hourly mean."""
+        """Two half-hourly values aggregate into the correct hourly mean."""
         engine = AnalysisEngine()
         # Test on 2026-01-02
         actuals = engine.aggregate_actuals("2026-01-02")
@@ -215,7 +215,7 @@ class TestActualsAggregation:
         assert h0.average_mw == 15366.5
 
     def test_duplicate_normalized_timestamps_detected(self):
-        """9. Duplicate normalized timestamps are detected before joining."""
+        """Duplicate normalized timestamps are detected before joining."""
         # If two records have identical startTime, aggregate_actuals must raise an error
         class MockLoader(DataLoader):
             def get_actuals_for_date(self, settlement_date: str):
@@ -231,7 +231,7 @@ class TestActualsAggregation:
             engine.aggregate_actuals("2026-01-02")
 
     def test_missing_values_do_not_become_zero(self):
-        """10. Missing values do not become zero."""
+        """Missing values do not become zero."""
         engine = AnalysisEngine()
         analysis = engine.analyze_delivery_day("2026-01-02", "09:00")
         # In the complete verified snapshot, every interval has a valid non-zero forecast and actual

@@ -16,10 +16,10 @@ from backend.app.timestamps import (
 
 
 class TestForecastSelection:
-    """Tests covering requirements 3, 4, 5, 6, 7."""
+    """Forecast selection, cutoff compliance, and vintage evaluation tests."""
 
     def test_forecast_published_after_cutoff_is_excluded(self):
-        """3. A forecast published after the cutoff is excluded."""
+        """A forecast published after the cutoff is strictly excluded."""
         engine = AnalysisEngine()
         # Decision date 2026-01-01, Delivery date 2026-01-02
         decision_d = date(2026, 1, 1)
@@ -44,7 +44,7 @@ class TestForecastSelection:
             assert pt_dt <= cutoff_utc
 
     def test_latest_eligible_publication_is_selected_deterministically(self):
-        """4. The latest eligible publication is selected deterministically."""
+        """The latest eligible publication is selected deterministically."""
         engine = AnalysisEngine()
 
         # At default 09:00 cutoff, the latest eligible vintage for ALL 31 decision dates
@@ -63,7 +63,7 @@ class TestForecastSelection:
             assert analysis.latest_complete_vintage.publish_time_iso == expected_pt
 
     def test_forecast_records_from_different_vintages_are_never_mixed(self):
-        """5. Forecast records from different vintages are never mixed."""
+        """Forecast records from different vintages are never mixed."""
         engine = AnalysisEngine()
         analysis = engine.analyze_delivery_day("2026-01-02", "09:00")
 
@@ -79,7 +79,7 @@ class TestForecastSelection:
             assert interval["forecast_mw"] == original_vintage_records[interval["startTime"]]
 
     def test_incomplete_latest_vintage_reports_gaps_without_fallback(self):
-        """6. Incomplete latest vintages report gaps and do not silently fall back or fabricate missing values."""
+        """Incomplete latest vintages report gaps and do not silently fall back or fabricate missing values."""
         # Scenario: Cutoff is set to 01:00 UTC on 2026-01-01.
         # On 2026-01-01, the first publication on that day was at 02:30 UTC (which is after 01:00).
         # The latest vintage published before 01:00 UTC was on 2025-12-31 at 22:30 UTC!
@@ -113,7 +113,7 @@ class TestForecastSelection:
         assert h23["signed_error_mw"] is None
 
     def test_latest_complete_comparison_labelled_distinctly(self):
-        """7. The optional latest-complete comparison is labelled distinctly."""
+        """The optional latest-complete comparison is labelled distinctly."""
         # Using a custom synthetic loader where:
         # - Vintage A (05:00 UTC) has 24/24 hours (complete)
         # - Vintage B (08:00 UTC) has only 12/24 hours (incomplete)

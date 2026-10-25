@@ -49,7 +49,7 @@ export const MethodologyView: React.FC<MethodologyViewProps> = ({ metadata, cuto
         <p style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.7, margin: 0 }}>
           Windline evaluates the accuracy of National Grid ESO day-ahead wind generation forecasts
           produced for Great Britain (GB). The study isolates the decision window from{' '}
-          <strong>2026-01-01 to 2026-01-31</strong> (31 decision gates) and corresponding delivery dates{' '}
+          <strong>2026-01-01 to 2026-01-31</strong> (31 decision cutoffs) and corresponding delivery dates{' '}
           <strong>2026-01-02 to 2026-02-01</strong> (31 delivery days, 744 hourly settlement intervals).
           All forecast selections are deterministic and strictly enforced without hindsight.
         </p>

@@ -37,7 +37,7 @@ class TestEndpointsSmokeAndContracts:
         assert "source_files" in data["provenance"]
 
     def test_overview_reproduces_31_days_and_744_comparisons(self):
-        """16. Default analysis reproduces 31 decision days and up to 744 hourly comparisons."""
+        """Default analysis reproduces 31 decision days and 744 hourly comparisons."""
         resp = client.get("/api/overview?cutoff=09:00")
         assert resp.status_code == 200
         data = resp.json()
@@ -172,10 +172,10 @@ class TestEndpointsSmokeAndContracts:
 
 
 class TestErrorHandlingAndValidation:
-    """Tests covering requirements 13, 14, 15: Error handling, bad inputs, and no NaN/Inf."""
+    """Error handling, input validation, and JSON numerical hygiene tests."""
 
     def test_invalid_cutoff_input_returns_400(self):
-        """13. Invalid cutoff input returns HTTP 400."""
+        """Invalid cutoff input returns HTTP 400."""
         # Bad formats
         for bad_cutoff in ["99:99", "09:60", "25:00", "9:00", "abc", ""]:
             resp = client.get(f"/api/overview?cutoff={bad_cutoff}")
@@ -188,14 +188,14 @@ class TestErrorHandlingAndValidation:
             assert resp3.status_code == 400
 
     def test_invalid_delivery_date_format_returns_400(self):
-        """13. Invalid delivery date format returns HTTP 400."""
+        """Invalid delivery date format returns HTTP 400."""
         for bad_date in ["not-a-date", "02-01-2026", "2026-1-2", "2026-99-99", "invalid-date"]:
             resp = client.get(f"/api/deliveries/{bad_date}")
             assert resp.status_code == 400
 
 
     def test_out_of_window_delivery_date_returns_400(self):
-        """14. Out-of-window delivery dates return a clear client error."""
+        """Out-of-window delivery dates return a clear client error."""
         # Valid window is 2026-01-02 to 2026-02-01
         for out_date in ["2026-01-01", "2025-12-31", "2026-02-02", "2026-03-01"]:
             resp = client.get(f"/api/deliveries/{out_date}")
@@ -203,7 +203,7 @@ class TestErrorHandlingAndValidation:
             assert "outside the January delivery window" in resp.json()["detail"]
 
     def test_no_nan_or_infinity_in_json_responses(self):
-        """15. API responses contain no NaN or Infinity JSON values."""
+        """API responses contain no NaN or Infinity JSON values."""
         endpoints = [
             "/api/health",
             "/api/metadata",

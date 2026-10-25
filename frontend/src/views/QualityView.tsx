@@ -158,7 +158,7 @@ export const QualityView: React.FC<QualityViewProps> = ({
         <div className="panel-body">
           <div style={{ fontSize: '13px', lineHeight: 1.7, color: 'var(--text-secondary)' }}>
             <p style={{ marginTop: 0 }}>
-              On decision date <strong>2026-01-01</strong>, the configured decision gate is <strong>09:00 Europe/London</strong> (09:00 UTC).
+              On decision date <strong>2026-01-01</strong>, the configured decision cutoff is <strong>09:00 Europe/London</strong> (09:00 UTC).
               Windline deterministically evaluates all publications in the audit archive to prevent hindsight leakage:
             </p>
 

@@ -1,72 +1,78 @@
-# Implementation Plan
+# Implementation Specification
 
-> **Project**: Windline — GB Wind Generation Forecast Analytics
-> **Prerequisite**: [ASSUMPTIONS.md](file:///d:/WIND/docs/ASSUMPTIONS.md) reviewed and accepted
-> **GO / NO-GO**: ✅ **GO** — confirmed by live API tests on 2026-10-25
+> **Project**: Windline — GB Wind Generation Forecast Analytics<br>
+> **Reference**: [ASSUMPTIONS.md](ASSUMPTIONS.md) and [ARCHITECTURE.md](ARCHITECTURE.md)<br>
+> **Feasibility Status**: Verified against official Elexon Insights Solution (BMRS) data
 
 ---
 
-## 0. Feasibility Summary
+## 1. Feasibility Summary
+
+The feasibility of retrospective wind generation forecast evaluation across January 2026 was empirically verified against the official Elexon BMRS API:
 
 | Check | Result |
 |-------|--------|
-| FUELHH stream endpoint reachable | ✅ HTTP 200, 48 rows for 2026-01-02 |
-| WINDFOR stream endpoint reachable | ✅ HTTP 200, 219 rows (3 vintages) for 2026-01-01 pre-09:00 |
-| API key required | ❌ No — public API |
-| Pagination / row limits | None on stream endpoints |
-| Fields and types match documented contract | ✅ Verified via live response inspection |
-| Forecast → actual alignment feasible | ✅ 24/24 delivery-day hours joinable |
-| Complete forecast vintages available | ✅ 73 hourly intervals per vintage |
+| FUELHH stream endpoint reachable | Verified HTTP 200, 48 rows per day for GB wind generation |
+| WINDFOR stream endpoint reachable | Verified HTTP 200, exactly 73 hourly intervals per vintage |
+| API key required | Public API, no key or subscription required |
+| Rate & pagination constraints | Unbounded stream queries supported for historical windows |
+| Schema & field types | Verified exact match against documented OpenAPI contract |
+| Forecast to actual alignment | 100% of delivery-day hours (744 / 744) joinable on UTC timestamps |
+| Forecast vintages | Regular publication history (8 vintages per day across 32 days) |
 
 ---
 
-## 1. Architecture Overview
+## 2. System Architecture
+
+Windline is packaged as a unified application where FastAPI serves both the deterministic analytical API and the pre-built React single-page application:
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│                        React Frontend                     │
-│  • Decision-date selector (calendar, 2026-01-01..31)     │
-│  • Cutoff time selector (default 09:00 Europe/London)    │
-│  • Forecast vs actual comparison chart                    │
-│  • Error metrics dashboard (MAE, RMSE, bias)             │
-│  • Vintage evolution view                                 │
-└───────────────────────┬──────────────────────────────────┘
-                        │ REST / JSON
-┌───────────────────────┴──────────────────────────────────┐
-│                    Python Backend (FastAPI)                │
-│  • /api/decision-dates          — list available dates    │
-│  • /api/forecast/{date}         — eligible forecast(s)    │
-│  • /api/actual/{date}           — actual generation       │
-│  • /api/comparison/{date}       — aligned forecast+actual │
-│  • /api/metrics/{date}          — error statistics        │
-│  Upstream: Elexon BMRS API (read-only, no key)           │
+│                   React 19 Frontend SPA                  │
+│  • Overview: 31-day KPI metrics, daily trend charts      │
+│  • Explorer: Per-day 24h interval review, vintage modal  │
+│  • Accuracy: Metric definitions, residual distribution   │
+│  • Quality: Vintage audit, zero-imputation guarantees    │
+│  • Methodology: Mathematical formulas, BMRS licensing    │
+└───────────────────────────┬──────────────────────────────┘
+                            │ REST / JSON (/api/*)
+┌───────────────────────────▼──────────────────────────────┐
+│                  FastAPI Application Core                │
+│  • /api/health                                           │
+│  • /api/metadata                                         │
+│  • /api/overview?cutoff=09:00                            │
+│  • /api/deliveries?cutoff=09:00                          │
+│  • /api/deliveries/{date}?cutoff=09:00                   │
+│  • /api/deliveries/{date}/vintages?cutoff=09:00          │
+│  • /api/export.csv?cutoff=09:00                          │
+└───────────────────────────┬──────────────────────────────┘
+                            │ In-Memory Eager Loading
+┌───────────────────────────▼──────────────────────────────┐
+│              Audited Historical Data Snapshots           │
+│  • data/audit/fuelhh_full.json  (1,488 actual records)   │
+│  • data/audit/windfor_full.json (18,688 forecast records)│
+│  • data/provenance.json         (Checksums & metadata)   │
 └──────────────────────────────────────────────────────────┘
 ```
 
 ### Technology Stack
 
 | Layer | Technology | Rationale |
-|-------|-----------|-----------|
-| Backend | Python 3.11+ / FastAPI | Async HTTP, fast JSON, type hints |
-| HTTP client | `httpx` (async) | Connection pooling, timeout control |
-| Datetime handling | `zoneinfo` (stdlib) + `datetime` | No pytz dependency |
-| Frontend | React (Vite) | Modern DX, fast HMR |
-| Charts | Recharts or Plotly.js | Good time-series support |
-| Caching | In-memory LRU or file-based | Avoid hammering Elexon on repeated queries |
-| Testing | pytest + pytest-asyncio | Backend unit/integration tests |
-
-### External Dependencies
-
-- **Elexon BMRS API** — free, public, no key, no subscription
-- No database required (data fetched on demand, optionally cached)
-- No AI/ML service
-- No paid third-party APIs
+|-------|------------|-----------|
+| Runtime | Python 3.12 (3.11+ compatible) | Modern standard library typing and `zoneinfo` support |
+| Web Framework | FastAPI 0.162+ | High performance ASGI framework with automatic OpenAPI docs |
+| Validation | Pydantic v2 | Strict request/response validation and serialization |
+| Frontend | React 19 + TypeScript + Vite | Type-safe, reactive single-page dashboard |
+| Styling | Vanilla CSS Design System | Curated institutional color tokens and tabular typography |
+| Testing | pytest + httpx TestClient | Portably testing domain logic, metrics, and API contracts |
 
 ---
 
-## 2. Core Concepts
+## 3. Core Domain Concepts
 
-### 2.1 Decision Date vs Delivery Date
+### 3.1 Decision Date vs. Delivery Date
+
+Day-ahead wholesale electricity procurement commits volume on decision date $D$ for physical delivery on calendar day $D+1$:
 
 ```
 Decision Date (D)          Delivery Date (D+1)
@@ -77,254 +83,85 @@ Decision Date (D)          Delivery Date (D+1)
 2026-01-31         →       2026-02-01
 ```
 
-A **decision** is made on date D to procure energy for delivery on D+1.
-The forecast used must have been **published before** the decision cutoff on D.
+- Target decision window: **2026-01-01 through 2026-01-31** (31 decision dates).
+- Target delivery window: **2026-01-02 through 2026-02-01** (31 delivery dates).
 
-### 2.2 Decision Cutoff
+### 3.2 Decision Cutoff & Anti-Leakage Policy
 
-- **Default**: 09:00 Europe/London (= 09:00 UTC in January)
-- **Nature**: Configurable assumption, not a fixed market rule
-- **Implementation**: The cutoff is a `time` + `timezone` pair applied to the decision date to produce a UTC `datetime` threshold
-- **Rule**: A WINDFOR vintage is eligible if `publishTime <= cutoff_datetime_utc`
+- Default cutoff: **09:00 Europe/London** (= 09:00 UTC in January).
+- A WINDFOR vintage is eligible for decision date $D$ if and only if:
+  $$\text{publishTime}_{\text{utc}} \le \text{cutoff}_{\text{utc}}$$
+- Any forecast published after cutoff is strictly excluded to prevent hindsight leakage.
 
-### 2.3 Forecast Vintage Selection
+### 3.3 Forecast Vintage Selection
 
-For a given decision date D and cutoff time T:
+For a target delivery date $D+1$ and decision cutoff:
+1. Filter all vintages published at or before the decision cutoff.
+2. Identify vintages covering delivery day $D+1$ (intervals `00:00:00Z` to `23:00:00Z`).
+3. Select the latest eligible vintage as primary. If all 24 delivery hours are present, it is marked `complete`.
+4. If the latest eligible vintage covers fewer than 24 hours, it is marked `incomplete`, missing hours are reported with `forecast_mw = None`, and the system does not silently replace or fabricate values.
 
-1. Query WINDFOR with `publishDateTimeFrom` = start of D, `publishDateTimeTo` = T (in UTC)
-2. Group returned rows by `publishTime` — each group is a **vintage**
-3. Select the **latest** vintage (highest `publishTime` ≤ T)
-4. Extract the rows where `startTime` falls within the delivery day D+1 (00:00–23:00 UTC for January)
+### 3.4 Interval Alignment & Aggregation
 
-> **Open question**: Should the user be able to select earlier vintages
-> for comparison? → Yes, expose all eligible vintages in the API response.
+| Dataset | Granularity | Intervals per Day |
+|---------|-------------|-------------------|
+| WINDFOR | 1 hour | 24 clock hours (00:00 to 23:00 UTC) |
+| FUELHH | 30 minutes | 48 settlement periods (SPs 1 to 48) |
 
-### 2.4 Interval Alignment
-
-| Dataset | Granularity | Intervals per day |
-|---------|------------|-------------------|
-| WINDFOR | 1 hour | 24 (00:00–23:00 UTC) |
-| FUELHH | 30 min | 48 (SP 1–48, 00:00–23:30 UTC) |
-
-**Alignment strategy**:
-
-```python
-# For each clock hour H on the delivery day:
-#   actual_mw = mean(FUELHH[H:00], FUELHH[H:30])
-#   forecast_mw = WINDFOR[H:00]
-#   error_mw = forecast_mw - actual_mw
-```
-
-This produces 24 aligned (forecast, actual) pairs per delivery day.
+For each clock hour $H$ (`YYYY-MM-DDTHH:00:00Z`):
+$$\text{Actual}_{\text{avg}}(H) = \frac{\text{Gen}(H\text{:00}) + \text{Gen}(H\text{:30})}{2}$$
+$$\text{Signed Error}(H) = \text{Forecast}(H) - \text{Actual}_{\text{avg}}(H)$$
+$$\text{Absolute Error}(H) = |\text{Signed Error}(H)|$$
 
 ---
 
-## 3. API Design
+## 4. API Endpoints
 
-### 3.1 Endpoints
-
-#### `GET /api/decision-dates`
-
-Returns the list of valid decision dates in scope.
-
-```json
-{
-  "dates": ["2026-01-01", "2026-01-02", ..., "2026-01-31"],
-  "deliveryDates": ["2026-01-02", "2026-01-03", ..., "2026-02-01"]
-}
-```
-
-#### `GET /api/forecast/{decision_date}`
-
-Query params: `cutoff` (optional, default `09:00`), `tz` (optional, default `Europe/London`)
-
-Returns all eligible forecast vintages and their hourly values for the delivery day.
-
-```json
-{
-  "decisionDate": "2026-01-01",
-  "deliveryDate": "2026-01-02",
-  "cutoffUtc": "2026-01-01T09:00:00Z",
-  "vintages": [
-    {
-      "publishTime": "2026-01-01T07:30:00Z",
-      "selected": true,
-      "intervals": [
-        {"startTime": "2026-01-02T00:00:00Z", "forecastMw": 18781},
-        ...
-      ]
-    },
-    ...
-  ]
-}
-```
-
-#### `GET /api/actual/{delivery_date}`
-
-Returns half-hourly actuals and hourly aggregation for the delivery day.
-
-```json
-{
-  "deliveryDate": "2026-01-02",
-  "halfHourly": [...],
-  "hourly": [
-    {"startTime": "2026-01-02T00:00:00Z", "actualMw": 15367},
-    ...
-  ]
-}
-```
-
-#### `GET /api/comparison/{decision_date}`
-
-Returns aligned forecast vs actual with per-interval errors.
-
-```json
-{
-  "decisionDate": "2026-01-01",
-  "deliveryDate": "2026-01-02",
-  "selectedVintage": "2026-01-01T07:30:00Z",
-  "intervals": [
-    {
-      "startTime": "2026-01-02T00:00:00Z",
-      "forecastMw": 18781,
-      "actualMw": 15367,
-      "errorMw": 3414,
-      "errorPct": 22.2
-    },
-    ...
-  ],
-  "metrics": {
-    "mae": 1234.5,
-    "rmse": 1567.8,
-    "bias": 456.7,
-    "count": 24
-  }
-}
-```
-
-### 3.2 Error Handling
-
-| Scenario | Handling |
-|----------|---------|
-| No forecast vintage available before cutoff | Return empty `vintages` array with explanatory message |
-| Missing forecast intervals for delivery day | Include gap list in response; partial metrics still computed |
-| Missing actual intervals | Flag incomplete hours; exclude from error metrics |
-| Elexon API timeout / error | Return 502 with upstream error details |
-| Date outside scope | Return 400 with valid date range |
+| Method | Endpoint | Query Parameters | Description |
+|--------|----------|------------------|-------------|
+| `GET` | `/api/health` | None | Service status, application version, and UTC timestamp |
+| `GET` | `/api/metadata` | None | Data provider attribution, date windows, metric definitions |
+| `GET` | `/api/overview` | `cutoff` (default: `09:00`) | Aggregate 31-day summary metrics and daily summary cards |
+| `GET` | `/api/deliveries` | `cutoff` (default: `09:00`) | List of all 31 delivery days with selected vintages |
+| `GET` | `/api/deliveries/{date}` | `cutoff` (default: `09:00`) | 24 hourly intervals with forecast, actual, and errors |
+| `GET` | `/api/deliveries/{date}/vintages` | `cutoff` (default: `09:00`) | All eligible publication vintages for the decision date |
+| `GET` | `/api/export.csv` | `cutoff` (default: `09:00`) | CSV stream of all 744 hourly comparison intervals |
 
 ---
 
-## 4. Handling Edge Cases
-
-### 4.1 Missing Forecast Intervals
-
-Observed: Each WINDFOR vintage covers ~73 hourly intervals spanning ~3 calendar days. For a delivery day of 24 hours, we expect all 24 to be present.
-
-**If any are missing**: Report the gap count and compute metrics only on available pairs.
-
-### 4.2 Actual-Generation Revisions
-
-Observed: FUELHH returns one row per settlement period with no duplicates. If future data shows revisions (multiple rows per SP), the implementation should:
-
-1. Prefer the row with the **latest** `publishTime`
-2. Log when revisions are detected
-
-### 4.3 Forecast Vintage Completeness
-
-Observed: All 3 vintages in the test window had exactly 73 intervals and no duplicates. The system should still verify completeness per vintage and flag anomalies.
-
-### 4.4 Settlement Day Boundary
-
-GB settlement days run midnight-to-midnight UTC in winter (GMT). Settlement period 1 starts at 00:00 UTC. This aligns cleanly with WINDFOR hourly boundaries.
-
-> **Note**: During BST (late March–late October), settlement days start at 23:00 UTC the previous day. This is out of scope for January but should be accounted for in a general implementation.
-
----
-
-## 5. Implementation Phases
-
-### Phase 1: Backend Core (Current focus after GO)
-
-- [ ] Python project structure with FastAPI
-- [ ] Elexon API client module (`elexon.py`)
-  - `fetch_fuelhh(settlement_date, fuel_type="WIND")`
-  - `fetch_windfor(publish_from, publish_to)`
-- [ ] Domain logic module (`domain.py`)
-  - `get_eligible_vintages(decision_date, cutoff_time, tz)`
-  - `select_latest_vintage(vintages)`
-  - `align_forecast_actual(forecast, actual)`
-  - `compute_metrics(aligned)`
-- [ ] API routes (`routes.py`)
-- [ ] Response caching (LRU or file-based)
-- [ ] Unit tests with recorded/mocked API responses
-
-### Phase 2: Frontend
-
-- [ ] Vite + React project setup
-- [ ] Decision date picker component
-- [ ] Forecast vs actual time-series chart
-- [ ] Error metrics panel
-- [ ] Vintage selector (dropdown for comparing vintages)
-- [ ] Responsive layout
-
-### Phase 3: Polish
-
-- [ ] Loading states and error boundaries
-- [ ] Docker Compose for full-stack local dev
-- [ ] README with setup instructions
-- [ ] Optional: batch analysis view across all 31 decision dates
-
----
-
-## 6. Directory Structure (Proposed)
+## 5. Directory Structure
 
 ```
-WIND/
-├── docs/
-│   ├── ASSUMPTIONS.md
-│   └── IMPLEMENTATION_PLAN.md
-├── scripts/
-│   └── inspect_elexon.py          # This feasibility test
-├── data/
-│   └── sample/                    # Saved API responses
-│       ├── fuelhh_wind_2026-01-02.json
-│       └── windfor_2026-01-01_pre09.json
+.
+├── .github/workflows/ci.yml       # GitHub Actions CI workflow
+├── app.py                         # Unified entrypoint (FastAPI + React bundle)
 ├── backend/
 │   ├── app/
-│   │   ├── __init__.py
-│   │   ├── main.py                # FastAPI app
-│   │   ├── config.py              # Settings, cutoff defaults
-│   │   ├── elexon.py              # Elexon API client
-│   │   ├── domain.py              # Business logic
-│   │   ├── routes.py              # API endpoints
-│   │   └── models.py              # Pydantic response models
-│   ├── tests/
-│   │   ├── fixtures/              # Recorded API responses
-│   │   ├── test_elexon.py
-│   │   ├── test_domain.py
-│   │   └── test_routes.py
-│   └── requirements.txt
-├── frontend/
-│   ├── src/
-│   ├── package.json
-│   └── vite.config.js
-└── README.md
+│   │   ├── config.py              # System configuration and constants
+│   │   ├── engine.py              # Vintage selection and aggregation engine
+│   │   ├── loader.py              # In-memory snapshot loader
+│   │   ├── main.py                # FastAPI application definition
+│   │   ├── metrics.py             # MAE, RMSE, Signed Bias, WAPE formulas
+│   │   ├── models.py              # Pydantic v2 schemas
+│   │   ├── routes.py              # REST API endpoints
+│   │   └── timestamps.py          # UTC normalization and cutoff construction
+│   └── tests/                     # 33 unit and integration tests
+├── data/
+│   ├── audit/                     # Verified 31-day historical snapshots
+│   └── provenance.json            # Dataset provenance and licence metadata
+├── docs/
+│   ├── ARCHITECTURE.md            # Detailed system design
+│   ├── ASSUMPTIONS.md             # Empirical data contract and domain rules
+│   ├── DATA_AUDIT.md              # Full-window audit report
+│   └── IMPLEMENTATION_PLAN.md     # Engineering specification
+├── frontend/                      # React 19 TypeScript application
+├── scripts/
+│   ├── audit_full_window.py       # Full-window audit script
+│   ├── run_tests.py               # Test runner
+│   ├── smoke_test.py              # Acceptance checks
+│   └── verify_live_server.py      # Live server endpoint verification
+├── Dockerfile                     # Multi-stage production container build
+├── docker-compose.yml             # Local compose orchestration
+├── requirements.txt               # Pinned Python dependencies
+└── vercel.json                    # Serverless deployment configuration
 ```
-
----
-
-## 7. Key Verified Facts (from feasibility test)
-
-| Fact | Value |
-|------|-------|
-| FUELHH fields | `dataset`, `publishTime`, `startTime`, `settlementDate`, `settlementPeriod`, `fuelType`, `generation` |
-| WINDFOR fields | `dataset`, `publishTime`, `startTime`, `generation` |
-| FUELHH per day | 48 half-hourly rows (SP 1–48) |
-| WINDFOR per vintage | 73 hourly intervals (~3 days ahead) |
-| WINDFOR vintages in 9h window | 3 (at ~2.5h intervals) |
-| Generation unit | MW (integer) |
-| Timestamp format | ISO 8601 UTC, `Z`-terminated |
-| FUELHH `settlementDate` format | `YYYY-MM-DD` |
-| API authentication | None required |
-| Stream endpoint limits | None (unlimited rows) |
-| Joinable hours (test) | 24/24 delivery-day hours aligned |

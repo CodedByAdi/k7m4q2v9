@@ -1,12 +1,12 @@
 # Windline — January 2026 Full-Window Data Audit Report
 
-> **Project**: Windline — Retrospective Wind Forecast Analytics (GB Power Market)  
-> **Target Decision Window**: 2026-01-01 through 2026-01-31 (31 decision dates)  
-> **Target Delivery Window**: 2026-01-02 through 2026-02-01 (31 delivery dates)  
-> **Audit Execution Date**: 2026-10-25  
-> **Auditing Script**: [`scripts/audit_full_window.py`](file:///d:/WIND/scripts/audit_full_window.py)  
-> **Raw Datasets & Artifacts**: [`data/audit/`](file:///d:/WIND/data/audit)  
-> **Audit Status**: ✅ **GO — Full-Window Production Readiness Verified**
+> **Project**: Windline — Retrospective Wind Forecast Analytics (GB Power Market)<br>
+> **Target Decision Window**: 2026-01-01 through 2026-01-31 (31 decision dates)<br>
+> **Target Delivery Window**: 2026-01-02 through 2026-02-01 (31 delivery dates)<br>
+> **Audit Execution Date**: 2026-10-25<br>
+> **Auditing Script**: [`scripts/audit_full_window.py`](../scripts/audit_full_window.py)<br>
+> **Raw Datasets & Artifacts**: [`data/audit/`](../data/audit)<br>
+> **Audit Status**: Verified complete across all 31 delivery days and 744 comparison periods
 
 ---
 
@@ -176,16 +176,16 @@ To be considered complete for delivery day $D+1$, a forecast vintage must contai
 
 ## 6. Audit Artifacts & Reproducibility
 
-All audit artifacts have been persisted in the repository under [`data/audit/`](file:///d:/WIND/data/audit) for permanent reference and automated testing:
+All audit artifacts have been persisted in the repository under [`data/audit/`](../data/audit) for permanent reference and automated testing:
 
-1. [`fuelhh_analysis.json`](file:///d:/WIND/data/audit/fuelhh_analysis.json): Per-date record counts, settlement period verification, generation statistics.
-2. [`fuelhh_full.json`](file:///d:/WIND/data/audit/fuelhh_full.json): Raw 1,488 actual records for reproducible offline testing.
-3. [`windfor_analysis.json`](file:///d:/WIND/data/audit/windfor_analysis.json): Detailed inventory of all 256 vintages and their start/end ranges.
-4. [`windfor_full.json`](file:///d:/WIND/data/audit/windfor_full.json): Raw 18,688 forecast records covering the full January decision history.
-5. [`publication_time_analysis.json`](file:///d:/WIND/data/audit/publication_time_analysis.json): Statistical breakdown of publication schedules and jitter.
-6. [`decision_date_audit.json`](file:///d:/WIND/data/audit/decision_date_audit.json): Decision-by-decision audit showing eligible vintages, candidate selection, and coverage.
-7. [`alignment_results.json`](file:///d:/WIND/data/audit/alignment_results.json): Hourly comparison outputs for all 744 hours in scope.
-8. [`go_nogo.json`](file:///d:/WIND/data/audit/go_nogo.json): Machine-readable GO/NO-GO audit verdict.
+1. [`fuelhh_analysis.json`](../data/audit/fuelhh_analysis.json): Per-date record counts, settlement period verification, generation statistics.
+2. [`fuelhh_full.json`](../data/audit/fuelhh_full.json): Raw 1,488 actual records for reproducible offline testing.
+3. [`windfor_analysis.json`](../data/audit/windfor_analysis.json): Detailed inventory of all 256 vintages and their start/end ranges.
+4. [`windfor_full.json`](../data/audit/windfor_full.json): Raw 18,688 forecast records covering the full January decision history.
+5. [`publication_time_analysis.json`](../data/audit/publication_time_analysis.json): Statistical breakdown of publication schedules and jitter.
+6. [`decision_date_audit.json`](../data/audit/decision_date_audit.json): Decision-by-decision audit showing eligible vintages, candidate selection, and coverage.
+7. [`alignment_results.json`](../data/audit/alignment_results.json): Hourly comparison outputs for all 744 hours in scope.
+8. [`go_nogo.json`](../data/audit/go_nogo.json): Machine-readable verification status.
 
 The audit script can be re-run at any time via:
 ```bash
@@ -209,15 +209,15 @@ python scripts/audit_full_window.py
 
 ---
 
-## 8. Definitive GO / NO-GO Assessment
+## 8. Audit Verification Summary
 
 | Criterion | Requirement | Result |
 | :--- | :--- | :--- |
 | **API Availability & Access** | Public Elexon BMRS API reachable without keys or fees | ✅ **PASS** |
 | **Dataset Completeness** | 100% January actuals and forecast history available | ✅ **PASS** (1,488 actuals, 256 vintages) |
-| **Deterministic Selection** | Clear, uncompromised rule for latest pre-cutoff forecast | ✅ **PASS** (07:30 UTC vintage across all 31 days) |
+| **Deterministic Selection** | Clear rule for latest pre-cutoff forecast | ✅ **PASS** (07:30 UTC vintage across all 31 days) |
 | **Interval Alignment** | Exact join between half-hourly actuals and hourly forecasts | ✅ **PASS** (744 / 744 hours aligned, 0 gaps) |
 | **Data Quality** | Zero nulls, zero duplicates, realistic MW generation | ✅ **PASS** |
 
-### **Final Verdict**: **✅ GO FOR BACKEND IMPLEMENTATION**
-The source data contract is fully verified. We have proven that deterministic day-ahead forecast analysis can be built on real Elexon data without synthetic data or artificial assumptions.
+### Summary
+The source data contract is fully verified. The complete January 2026 dataset enables deterministic day-ahead forecast analysis on real Elexon BMRS data without synthetic records or artificial assumptions.

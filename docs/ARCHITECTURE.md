@@ -1,8 +1,7 @@
 # Windline — Architecture & System Design
 
-> **Application**: Windline — Retrospective GB Wind Generation Forecast Analytics  
-> **Status**: Phase 1 (Python Backend & Analysis Engine) Implemented  
-> **Backend Framework**: Python 3.11+ / FastAPI / Pydantic  
+> **Application**: Windline — Retrospective GB Wind Generation Forecast Analytics<br>
+> **Backend Framework**: Python 3.12 (compatible with 3.11+) / FastAPI / Pydantic
 
 ---
 
@@ -85,14 +84,14 @@ Windline is an engineering decision-support tool designed to retrospectively eva
 
 | Module | Responsibility | Key Classes / Functions |
 | :--- | :--- | :--- |
-| [`backend.app.config`](file:///d:/WIND/backend/app/config.py) | System-wide paths, constants, date windows, default parameters | `DECISION_DATE_START`, `DELIVERY_DATE_END`, `DEFAULT_CUTOFF_STR`, `LONDON_TZ` |
-| [`backend.app.timestamps`](file:///d:/WIND/backend/app/timestamps.py) | Timezone parsing, aware datetime conversion, cutoff math | `parse_iso_utc()`, `to_utc_iso()`, `make_cutoff_datetime()`, `validate_cutoff_format()` |
-| [`backend.app.metrics`](file:///d:/WIND/backend/app/metrics.py) | Mathematical evaluation metrics with zero-denominator safety | `calculate_mae()`, `calculate_rmse()`, `calculate_bias()`, `calculate_wape()`, `compute_metrics_summary()` |
-| [`backend.app.models`](file:///d:/WIND/backend/app/models.py) | Strongly typed Pydantic models for REST endpoints | `OverviewResponse`, `DeliveryDayDetailResponse`, `HourlyIntervalComparison`, `VintageInfo` |
-| [`backend.app.loader`](file:///d:/WIND/backend/app/loader.py) | Snapshot reader, schema validation, in-memory singleton cache | `DataLoader`, `FuelHHRecord`, `WindforRecord` |
-| [`backend.app.engine`](file:///d:/WIND/backend/app/engine.py) | Vintage evaluation, half-hourly aggregation, interval alignment | `AnalysisEngine`, `DeliveryDayAnalysis`, `VintageEvaluation` |
-| [`backend.app.routes`](file:///d:/WIND/backend/app/routes.py) | FastAPI route handlers, query parameter validation, CSV export | `router`, `get_overview()`, `get_delivery_detail()`, `export_csv()` |
-| [`backend.app.main`](file:///d:/WIND/backend/app/main.py) | FastAPI app factory, CORS middleware, lifespan startup loading | `app`, `lifespan()` |
+| [`backend.app.config`](../backend/app/config.py) | System-wide paths, constants, date windows, default parameters | `DECISION_DATE_START`, `DELIVERY_DATE_END`, `DEFAULT_CUTOFF_STR`, `LONDON_TZ` |
+| [`backend.app.timestamps`](../backend/app/timestamps.py) | Timezone parsing, aware datetime conversion, cutoff math | `parse_iso_utc()`, `to_utc_iso()`, `make_cutoff_datetime()`, `validate_cutoff_format()` |
+| [`backend.app.metrics`](../backend/app/metrics.py) | Mathematical evaluation metrics with zero-denominator safety | `calculate_mae()`, `calculate_rmse()`, `calculate_bias()`, `calculate_wape()`, `compute_metrics_summary()` |
+| [`backend.app.models`](../backend/app/models.py) | Strongly typed Pydantic models for REST endpoints | `OverviewResponse`, `DeliveryDayDetailResponse`, `HourlyIntervalComparison`, `VintageInfo` |
+| [`backend.app.loader`](../backend/app/loader.py) | Snapshot reader, schema validation, in-memory singleton cache | `DataLoader`, `FuelHHRecord`, `WindforRecord` |
+| [`backend.app.engine`](../backend/app/engine.py) | Vintage evaluation, half-hourly aggregation, interval alignment | `AnalysisEngine`, `DeliveryDayAnalysis`, `VintageEvaluation` |
+| [`backend.app.routes`](../backend/app/routes.py) | FastAPI route handlers, query parameter validation, CSV export | `router`, `get_overview()`, `get_delivery_detail()`, `export_csv()` |
+| [`backend.app.main`](../backend/app/main.py) | FastAPI app factory, CORS middleware, lifespan startup loading | `app`, `lifespan()` |
 
 ---
 
@@ -182,4 +181,4 @@ Streams a comma-separated values (CSV) export of all 744 hourly comparison inter
 
 - **In-Memory Caching**: Raw JSON files (~3.1 MB) are parsed once during application lifespan startup.
 - **Fast Response Times**: Endpoints respond in < 5ms since all alignment and evaluation operations execute in memory.
-- **Testing**: 31 unit and integration tests under `backend/tests/` verify domain mapping, timestamp arithmetic, forecast selection, edge cases, error codes, and CSV export.
+- **Testing**: 33 unit and integration tests under `backend/tests/` verify domain mapping, timestamp arithmetic, forecast selection, edge cases, error codes, and CSV export.

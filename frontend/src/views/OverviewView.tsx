@@ -30,10 +30,9 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
       {/* Hero Section */}
       <div className="page-header">
         <div>
-          <h1 className="page-title">Wind outlook, without hindsight.</h1>
+          <h1 className="page-title">January 2026 wind forecast review</h1>
           <p className="page-subtitle">
-            Retrospective day-ahead GB wind generation forecast evaluation across <strong>January 2026</strong>.
-            All forecast selections are bound strictly to decision-gate timestamps without future information leakage.
+            Compare the forecast available at each decision cutoff with observed wind generation across Great Britain.
           </p>
         </div>
         <div style={{ display: 'flex', gap: 10 }}>
@@ -130,7 +129,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
           </h2>
           <div className="panel-actions">
             <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-              Gate: {cutoff_local} Europe/London
+              Cutoff: {cutoff_local} Europe/London
             </span>
           </div>
         </div>

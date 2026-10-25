@@ -77,12 +77,18 @@ jobs:
           import sys, json
           data = json.load(sys.stdin)
           overall = data["overall_metrics"]
-          assert data["total_delivery_days"] == 31, f"Expected 31 days, got {data[\"total_delivery_days\"]}"
-          assert overall["expected_intervals"] == 744, f"Expected 744 intervals, got {overall[\"expected_intervals\"]}"
-          assert overall["matched_intervals"] == 744, f"Expected 744 matched, got {overall[\"matched_intervals\"]}"
-          assert overall["omitted_intervals"] == 0, f"Expected 0 omitted, got {overall[\"omitted_intervals\"]}"
-          assert overall["coverage"] == 1.0, f"Expected coverage 1.0, got {overall[\"coverage\"]}"
-          assert overall["wape"] == 18.07, f"Expected WAPE 18.07%, got {overall[\"wape\"]}"
+          total_days = data["total_delivery_days"]
+          exp = overall["expected_intervals"]
+          mat = overall["matched_intervals"]
+          omit = overall["omitted_intervals"]
+          cov = overall["coverage"]
+          wape = overall["wape"]
+          assert total_days == 31, f"Expected 31 days, got {total_days}"
+          assert exp == 744, f"Expected 744 intervals, got {exp}"
+          assert mat == 744, f"Expected 744 matched, got {mat}"
+          assert omit == 0, f"Expected 0 omitted, got {omit}"
+          assert cov == 1.0, f"Expected coverage 1.0, got {cov}"
+          assert wape == 18.07, f"Expected WAPE 18.07%, got {wape}"
           print("Overview verification passed: all 744 hourly comparisons confirmed.")
           '
 

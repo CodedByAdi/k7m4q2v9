@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Acceptance checks & smoke test script for Windline Phase 1."""
+"""Acceptance checks and smoke test script for Windline."""
 
 import json
 import math
@@ -41,7 +41,7 @@ client = TestClient(app)
 
 def run_checks():
     print("=" * 76)
-    print("WINDLINE PHASE 1 -- ACCEPTANCE CHECKS")
+    print("Windline -- Acceptance Checks")
     print("=" * 76)
 
     # 1. Compilation check

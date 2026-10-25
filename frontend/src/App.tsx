@@ -55,7 +55,7 @@ export const App: React.FC = () => {
       console.error('Failed to load Windline overview:', err)
       setError(
         err.message ||
-          'Failed to connect to Windline backend service at http://127.0.0.1:8000. Ensure the FastAPI service is running.'
+          'Unable to connect to the Windline analytics service. Please verify the service is running and accessible.'
       )
       setIsOnline(false)
       setLoading(false)
@@ -95,7 +95,7 @@ export const App: React.FC = () => {
           <div className="state-box" style={{ minHeight: 400 }}>
             <div className="spinner" />
             <p style={{ marginTop: 16, fontSize: '14px', color: 'var(--text-secondary)' }}>
-              Loading Windline analysis engine ({cutoff} Europe/London gate)...
+              Loading Windline analysis engine ({cutoff} Europe/London cutoff)...
             </p>
           </div>
         )}
@@ -191,7 +191,7 @@ export const App: React.FC = () => {
         }}
       >
         <div>
-          <span style={{ fontWeight: 600, color: 'var(--brand-forest)' }}>WINDLINE</span> — GB Wind Forecast Desk &copy; 2026.
+          <span style={{ fontWeight: 600, color: 'var(--brand-forest)' }}>Windline</span> — GB Wind Forecast Desk &copy; 2026.
           Contains BMRS data &copy; Elexon Limited copyright and database right 2026. Sourced under the{' '}
           <a
             href="https://www.elexon.co.uk/bsc/data/balancing-mechanism-reporting-agent/copyright-licence-bmrs-data/"

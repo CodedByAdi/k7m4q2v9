@@ -22,8 +22,8 @@ const CUTOFF_OPTIONS = [
   { value: '07:00', label: '07:00 Europe/London' },
   { value: '08:00', label: '08:00 Europe/London' },
   { value: '09:00', label: '09:00 Europe/London (Default)' },
-  { value: '10:00', label: '10:00 Europe/London (EPEX DA)' },
-  { value: '11:00', label: '11:00 Europe/London (Nord Pool DA)' },
+  { value: '10:00', label: '10:00 Europe/London' },
+  { value: '11:00', label: '11:00 Europe/London' },
   { value: '12:00', label: '12:00 Europe/London' },
 ]
 
@@ -39,9 +39,8 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="brand-section">
         <div className="brand-title">
           <Activity size={18} className="text-emerald-400" />
-          <span>WINDLINE</span>
+          <span>Windline</span>
         </div>
-        <span className="brand-badge">GB Forecast Desk</span>
       </div>
 
       <nav className="nav-links" aria-label="Main Navigation">
@@ -93,7 +92,7 @@ export const Header: React.FC<HeaderProps> = ({
 
       <div className="top-controls">
         <div className="cutoff-selector">
-          <label htmlFor="cutoff-select">Decision Gate:</label>
+          <label htmlFor="cutoff-select">Decision cutoff:</label>
           <select
             id="cutoff-select"
             value={cutoff}

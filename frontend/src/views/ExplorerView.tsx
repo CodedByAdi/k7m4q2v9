@@ -202,7 +202,7 @@ export const ExplorerView: React.FC<ExplorerViewProps> = ({
         <KpiCard
           label="Delivery Schedule"
           value={detail.delivery_date}
-          subtext={`Procured on decision date: ${detail.decision_date}`}
+          subtext={`Decision date: ${detail.decision_date}`}
         />
 
         <KpiCard

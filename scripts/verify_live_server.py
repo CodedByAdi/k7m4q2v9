@@ -8,6 +8,9 @@ import sys
 
 BASE_URL = "http://127.0.0.1:8000"
 
+# Direct loopback connection without environment proxy interference
+urllib.request.install_opener(urllib.request.build_opener(urllib.request.ProxyHandler({})))
+
 def test_health():
     print("=== CHECK 1: /api/health ===")
     with urllib.request.urlopen(f"{BASE_URL}/api/health") as resp:

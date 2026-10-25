@@ -1,10 +1,10 @@
 # Assumptions & Verified Data Contract
 
-> **Project**: Windline — GB Wind Generation Forecast Analytics  
-> **Status**: Full-Window Data Audit Complete (all 31 January 2026 dates verified)  
-> **Last Verified**: 2026-10-25 via [`scripts/audit_full_window.py`](file:///d:/WIND/scripts/audit_full_window.py)  
-> **Audit Report**: [`docs/DATA_AUDIT.md`](file:///d:/WIND/docs/DATA_AUDIT.md)  
-> **Verdict**: ✅ **GO — Production Ready**
+> **Project**: Windline — GB Wind Generation Forecast Analytics<br>
+> **Status**: Full-Window Data Audit Complete (all 31 January 2026 dates verified)<br>
+> **Last Verified**: 2026-10-25 via [`scripts/audit_full_window.py`](../scripts/audit_full_window.py)<br>
+> **Audit Report**: [`docs/DATA_AUDIT.md`](DATA_AUDIT.md)<br>
+> **Audit Status**: Verified across 31 decision dates and 744 hourly comparison periods
 
 ---
 
@@ -54,7 +54,7 @@
 | Item | Rule | Empirical Finding & Rationale |
 | :--- | :--- | :--- |
 | **Decision Date ($D$)** | Calendar date on which day-ahead procurement occurs | In-scope: 2026-01-01 through 2026-01-31 (31 dates) |
-| **Delivery Date ($D+1$)** | Calendar date for which power is procured | In-scope: 2026-01-02 through 2026-02-01 (31 dates) |
+| **Delivery Date ($D+1$)** | Calendar date for physical power delivery | In-scope: 2026-01-02 through 2026-02-01 (31 dates) |
 | **Decision Cutoff** | **09:00 Europe/London** (default assumption, configurable) | In January, Europe/London is GMT (UTC+0). 09:00 local = 09:00:00 UTC. |
 | **Eligible Forecast Vintages** | Any vintage where $\text{publishTime} \le \text{cutoff\_utc}$ | ✅ On every single January day, exactly 3 vintages (`02:30`, `04:30`, `07:30` UTC) are eligible |
 | **Completeness Requirement** | Must contain all 24 clock-hour intervals of delivery date $D+1$ | Prior-day vintages (e.g. $D-1\text{ 22:30 UTC}$) only cover 22/24 hours of $D+1$. Morning-of vintages cover 24/24. |
