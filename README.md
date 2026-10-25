@@ -1,7 +1,10 @@
-# Windline — GB Wind Forecast Desk
+# Windline
 
-> **Retrospective Day-Ahead Wind Forecast Analytics Engine**<br>
-> Evaluates Great Britain (GB) day-ahead national wind generation forecasts against outturn actual generation across all 31 delivery days of **January 2026** (2026-01-02 through 2026-02-01).
+> **January 2026 Wind Forecast Review**<br>
+> Evaluates Great Britain (GB) day-ahead national wind generation forecasts against observed outturn generation across all 31 delivery days of **January 2026** (2026-01-02 through 2026-02-01). Reconstructs the exact operational decision context available at each decision cutoff without hindsight bias.
+
+* **Live Demo**: [https://k7m4q2v9-y4hk-rho.vercel.app/](https://k7m4q2v9-y4hk-rho.vercel.app/)
+* **GitHub Repository**: [https://github.com/CodedByAdi/k7m4q2v9](https://github.com/CodedByAdi/k7m4q2v9)
 
 ---
 
@@ -11,7 +14,7 @@ In GB power system operations and wholesale electricity scheduling, position man
 
 * **Decision Window**: Decisions taken between **2026-01-01 and 2026-01-31** inclusive.
 * **Delivery Window**: Physical power delivery between **2026-01-02 and 2026-02-01** (31 calendar days).
-* **Decision Cutoff**: Configurable gate closure cutoff in `Europe/London` (default: **`09:00`**).
+* **Decision Cutoff**: Configurable decision cutoff in `Europe/London` (default: **`09:00`**).
 * **Strict Anti-Leakage Policy**: Any forecast published after the decision cutoff is strictly excluded from decision metrics.
 * **Granularity Alignment**: Aggregates half-hourly outturn generation (`FUELHH`) into hourly means and aligns with hourly forecast intervals (`WINDFOR`) on normalized UTC timestamps.
 * **Reproducibility**: Delivers **100% data coverage** (all 744 hourly comparison periods across 31 delivery days) backed by immutable verified raw snapshots.
@@ -109,8 +112,9 @@ $$\text{Delivery Date} = \text{Decision Date} + 1\text{ day}$$
 * **Extreme Discrepancy Event**: An exploratory threshold for hourly errors with $|f_i - a_i| \ge 3{,}000\text{ MW}$.
 
 ### 5.5 Domain Boundaries & Limitations
-1. **Non-Commercial Scope**: Windline is an analytical evaluation engine. It does not provide trading advice, imbalance settlement forecasting, or financial trading recommendations.
-2. **Publication Schedule Discrepancy**: While Elexon's narrative web documentation references forecast publication at 03:30, 05:30, and 08:30, the live BMRS stream records publish timestamps at 02:30, 04:30, and 07:30 UTC. Windline handles this by evaluating recorded `publishTime` timestamps rather than relying on hardcoded schedules.
+1. **Analytical Evaluation Scope**: Windline is an analytical evaluation engine designed for retrospective forecast accuracy assessment and research. It is not a commercial trading system, automated dispatch engine, or production trade capture platform.
+2. **No Financial or Price Calculations**: Windline models physical volume accuracy and error metrics in megawatts (MW). It does not calculate wholesale electricity market prices, imbalance cashflow exposure, procurement cost savings, or total commercial procurement requirements.
+3. **Publication Schedule Discrepancy**: While Elexon's narrative web documentation references forecast publication at 03:30, 05:30, and 08:30, the live BMRS stream records publish timestamps at 02:30, 04:30, and 07:30 UTC. Windline handles this by evaluating recorded `publishTime` timestamps rather than relying on hardcoded schedules.
 
 ---
 
@@ -227,10 +231,12 @@ A GitHub Actions workflow is defined in `.github/workflows/ci.yml` to automatica
 ## 9. Deployment Instructions
 
 ### 9.1 Vercel Serverless Deployment
-Windline is configured for deployment as a Vercel Serverless Function via `vercel.json`:
-* **Runtime**: Python 3.12 running FastAPI.
-* **Build Command**: `cd frontend && npm ci && npm run build` compiles static assets during build.
+Windline is deployed on Vercel as a serverless FastAPI application:
+* **Live Application URL**: [https://k7m4q2v9-y4hk-rho.vercel.app/](https://k7m4q2v9-y4hk-rho.vercel.app/)
+* **Runtime**: Python 3.12 running FastAPI via Vercel's Python runtime.
+* **Build Command**: `cd frontend && npm ci && npm run build` compiles static assets into `frontend/dist`.
 * **Entrypoint**: `backend.app.main:app` (configured via `[tool.vercel]` in `pyproject.toml`) points directly to the FastAPI instance.
+* **Package Discovery**: `[tool.setuptools.packages.find]` in `pyproject.toml` scopes discovery to `backend*`, enabling clean builds with `uv sync` in a flat monorepo layout.
 * **Data Snapshots**: Verified historical snapshots are bundled via `"includeFiles": "data/**"`.
 
 To deploy via the Vercel CLI:
@@ -251,7 +257,12 @@ docker run -p 8000:8000 windline
 
 ---
 
-## 10. AI-Assisted Development Disclosure
+## 10. AI-Assisted Development and Tooling
 
-In compliance with engineering challenge evaluation guidelines:  
-**AI coding assistants (Google Antigravity / Gemini) were utilized during the research, backend architecture, React UI implementation, and Docker/deployment packaging of this project.** All API integrations, statistical metrics, timestamp boundaries, and deployment configurations have been verified with automated test suites and real live API data audits.
+AI-assisted tools supported development, analysis, debugging, review, and documentation, while the implementation was validated through automated tests, static checks, and live application verification.
+
+The tools contributed to the project in their respective roles:
+
+* **Google Antigravity**: The primary development environment and agentic workflow used for repository inspection, implementation iterations, running commands, and testing.
+* **ChatGPT (OpenAI)**: Architecture and design discussions, reasoning through deployment failures, reviewing diagnostic outputs, planning validation, and clarifying technical trade-offs and documentation.
+* **Gemini**: Codebase analysis, syntax refactoring, and contextual assistance within the Antigravity development environment.
